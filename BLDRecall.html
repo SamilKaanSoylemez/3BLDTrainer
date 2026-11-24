@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BLD Recall – letter-pair &amp; algorithm drills</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#f4f1ea;--sf:#fffdf8;--tx:#1f1d1a;--mu:#7a746b;--bd:#ddd6c8;--ac:#c2410c;--ac2:#fbe9dd;--ok:#2f7d4f;--bad:#b3261e;color-scheme:light;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--sf:#201d1a;--tx:#ece7de;--mu:#9a9387;--bd:#38332d;--ac:#f08a52;--ac2:#33231a;--ok:#6fcf97;--bad:#f2877f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171513;--sf:#201d1a;--tx:#ece7de;--mu:#9a9387;--bd:#38332d;--ac:#f08a52;--ac2:#33231a;--ok:#6fcf97;--bad:#f2877f;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 "Avenir Next",Avenir,"Segoe UI",system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:20px 16px 56px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+h1{font:italic 600 24px/1 Georgia,"Times New Roman",serif;margin:0;letter-spacing:-.01em}h1 span{color:var(--ac)}
+h2{font:600 12px/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin:0 0 10px}
+nav{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;color:var(--mu);font:inherit;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--tx);border-color:var(--ac)}
+button,select,input,textarea{font:inherit;color:var(--tx)}
+.b{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:6px 12px;cursor:pointer}.b:hover{border-color:var(--ac)}
+.b.p{background:var(--ac);border-color:var(--ac);color:var(--bg)}.b.d:hover{border-color:var(--bad);color:var(--bad)}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.mu{color:var(--mu);font-size:13px}
+.in,select.in{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 9px;min-width:0}
+textarea.in{width:100%;min-height:150px;font:13px ui-monospace,Menlo,Consolas,monospace;margin:8px 0}
+label.f{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--mu)}
+.stage{text-align:center;padding:28px 12px;min-height:200px}
+.pair{font:600 64px/1.1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;color:var(--ac)}
+.word{font:italic 600 34px/1.2 Georgia,serif}
+.cap{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:6px}
+.code{display:block;font:15px ui-monospace,Menlo,Consolas,monospace;word-break:break-word;background:var(--bg);padding:8px 10px;border-radius:6px;margin:8px auto;max-width:560px;text-align:left}
+.ans{border-top:1px dashed var(--bd);margin-top:18px;padding-top:14px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}.st div{border:1px solid var(--bd);border-radius:8px;padding:6px 10px}.st b{display:block;font:500 20px ui-monospace,Menlo,monospace}
+.ok{color:var(--ok)}.no{color:var(--bad)}
+.al{padding:9px 0;border-bottom:1px solid var(--bd)}.al:last-child{border:0}
+.gh{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin:18px 0 2px}
+.scg{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.scg label{display:flex;justify-content:space-between;align-items:center;gap:4px;font:12px ui-monospace,monospace;color:var(--mu);border:1px solid var(--bd);border-radius:6px;padding:2px 4px 2px 8px}
+.scg input{width:30px;text-align:center;text-transform:uppercase;font-weight:600;padding:3px}
+details{margin-top:12px}summary{cursor:pointer;color:var(--mu);font-size:13px}
+kbd{font:12px ui-monospace,monospace;border:1px solid var(--bd);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--bg)}
+#msg{min-height:20px;margin:6px 0 0}
+summary{display:inline-block}
+.scw{background:var(--ac2);border:1px solid var(--bad);color:var(--bad);border-radius:6px;padding:6px 10px;margin:10px 0;font-size:13px}
+.scg input.bad{border-color:var(--bad);color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="w">
+ <header><h1>BLD <span>Recall</span></h1><button class="b" id="th" title="Cycle theme">Theme: auto</button></header>
+ <nav id="nav"></nav>
+ <main id="main"></main>
+</div>
+<script>
+(()=>{'use strict';
+/* ---------- constants & helpers ---------- */
+const P='bldrecall:v1:',$=id=>document.getElementById(id);
+const ld=(k,d)=>{try{const v=localStorage.getItem(P+k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(P+k,JSON.stringify(v))}catch(e){}};
+// Sticker names, letter scheme (Speffz default) and algorithm structure match BLDTrainer
+const EP='UB UR UF UL LU LF LD LB FU FR FD FL RU RB RD RF BU BL BD BR DF DR DB DL'.split(' ');
+const CP='UBL UBR UFR UFL LUB LUF LDF LDB FUL FUR FDR FDL RUF RUB RDB RDF BUR BUL BDL BDR DFL DFR DBR DBL'.split(' ');
+const SP=[...'ABCDEFGHIJKLMNOPQRSTUVWX'],KS=['Edges','Corners','Parity'];
+const defSch=()=>{const e={},c={};EP.forEach((n,i)=>e[n]=SP[i]);CP.forEach((n,i)=>c[n]=SP[i]);return{e,c}};
+const pk=n=>n.split('').sort().join('');
+const MV=/^([UDLRFB]w?|[udlrfbxyzMES])[2']?$/;
+const clean=s=>String(s==null?'':s).replace(/[’‘′´`]/g,"'").replace(/[\u200b-\u200d\u2060\ufeff]/g,'');
+const toks=s=>clean(s).replace(/[()\[\],:]/g,' ').split(/\s+/).filter(Boolean);
+const valid=s=>{const t=toks(s);return t.length>0&&t.every(x=>MV.test(x))};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=a=>a[Math.random()*a.length|0];
+
+/* ---------- persisted state ---------- */
+let cfg=Object.assign({theme:'auto',eb:'DF',cb:'LUB',type:'e',mode:'pw',excl:true,focus:'',meth:'',q:''},ld('cfg',{}));
+let cu=ld('cu',[]),pw=ld('pw',{}),sch=ld('sch',null),stats=ld('stats',null),done=ld('done',{});
+if(!done||typeof done!=='object'||Array.isArray(done))done={};
+if(!Array.isArray(cu))cu=[];
+if(!pw||typeof pw!=='object'||Array.isArray(pw))pw={};
+if(!sch||!sch.e||!sch.c)sch=defSch();
+if(!stats||typeof stats!=='object')stats={n:0,ok:0,st:0,best:0,per:{}};
+if(!stats.per)stats.per={};
+const saveCfg=()=>sv('cfg',cfg),saveCu=()=>sv('cu',cu),savePw=()=>sv('pw',pw),saveSch=()=>sv('sch',sch),saveStats=()=>sv('stats',stats);
+
+/* ---------- algorithm library (BLDTrainer "cu" shape: [{t,s:[{n,k,a:[[name,'',alg,alts?]]}]}]) ---------- */
+const flat=()=>cu.flatMap(T=>T.s.flatMap(S=>S.a.map(a=>({m:T.t,s:S.n,k:S.k,n:a[0],alg:a[2]}))));
+function addAlg(m,sn,name,alg,alts){
+ m=String(m||'').trim();sn=String(sn||'').trim();name=String(name||'').trim();alg=clean(alg).trim();
+ if(!m||!sn||!name||!valid(alg))return 'bad';
+ let T=cu.find(x=>x.t===m);if(!T){T={t:m,s:[]};cu.push(T)}
+ let S=T.s.find(x=>x.n===sn);if(!S){S={n:sn,k:KS.includes(sn)?sn:'',a:[]};T.s.push(S)}
+ if(S.a.some(x=>x[0]===name&&x[2]===alg))return 'dup';
+ const r=[name,'',alg];if(Array.isArray(alts)&&alts.length)r.push(alts);S.a.push(r);return 'add'}
+function impTable(t){const r={add:0,dup:0,bad:0};
+ t.split('\n').forEach(l=>{const c=l.split('|').map(s=>s.trim());if(c[0]==='')c.shift();if(c.length&&c[c.length-1]==='')c.pop();
+  if(c.length<4||/^[-: ]+$/.test(c[0])||c[0].toLowerCase()==='method')return;
+  r[addAlg(c[0],c[1],c[2],c.slice(3).join('|'))]++});return r}
+function impJson(o){const r={add:0,dup:0,bad:0};if(o&&!Array.isArray(o)&&o.cu)o=o.cu;if(!Array.isArray(o))throw new Error('Expected a JSON array');
+ o.forEach(x=>{if(!x||typeof x!=='object')return;
+  if(Array.isArray(x.s))x.s.forEach(S=>(S.a||[]).forEach(a=>r[addAlg(x.t,S.n,a[0],a[2],a[3])]++));
+  else r[addAlg(x.method||x.t,x.subtitle||x.sub||x.s,x.name||x.algName,x.alg,x.alts)]++});return r}
+const expTable=()=>['| Method | SubTitle | AlgName | Alg |'].concat(flat().map(x=>`| ${x.m} | ${x.s} | ${x.n} | ${x.alg} |`)).join('\n');
+const expJson=()=>JSON.stringify(cu,null,1);
+
+/* ---------- letter pairs (pw: {"AB":"word"}) & scheme (sch: {e:{UB:"A"},c:{UBL:"A"}}) ---------- */
+function applySch(S){
+ const ok=(L,names)=>L&&typeof L==='object'&&names.every(n=>typeof L[n]==='string'&&L[n].length===1&&L[n].trim())&&new Set(names.map(n=>L[n].toUpperCase())).size===names.length;
+ if(!ok(S.e,EP)||!ok(S.c,CP))return false;
+ const up=(L,N)=>{const o={};N.forEach(n=>o[n]=L[n].toUpperCase());return o};
+ sch={e:up(S.e,EP),c:up(S.c,CP)};saveSch();return true}
+function impPairs(t){t=t.trim();const r={add:0,bad:0,sch:''};
+ const put=(k,v)=>{k=String(k).trim().toUpperCase();v=String(v==null?'':v).trim();if(/^\S{1,2}$/.test(k)&&v){pw[k]=v;r.add++}else r.bad++};
+ if(t[0]==='{'){const o=JSON.parse(t);
+  if(o.sch)r.sch=applySch(o.sch)?'Letter scheme applied. ':'Letter scheme rejected (invalid or duplicate letters). ';
+  const W=(o.pw||o.sch)?(o.pw||{}):o;Object.keys(W).forEach(k=>put(k,W[k]))}
+ else t.split('\n').forEach(l=>{if(!l.trim())return;const m=l.match(/^\s*(\S{1,2})\s*=\s*(.+)$/);m?put(m[1],m[2]):r.bad++});
+ savePw();return r}
+const expPairs=()=>Object.entries(pw).map(([k,v])=>k+'='+v).join('\n');
+const expPairsJson=()=>JSON.stringify({pw,sch},null,1);
+
+/* ---------- trainer ---------- */
+let tab='train',cur=null,shown=false,sess={n:0,ok:0};
+const bufPk=t=>pk(t==='e'?cfg.eb:cfg.cb);
+const focusOk=l=>!cfg.focus.trim()||cfg.focus.toUpperCase().includes(l);
+function findAlg(t,key){const want=t==='e'?'Edges':'Corners',all=flat().filter(x=>x.n.toUpperCase()===key);return all.find(x=>x.k===want)||all.find(x=>!x.k)||null}
+function pairItem(t,a,b){const m=sch[t],key=m[a]+m[b];return{kind:'pair',t,a,b,key,id:t+':'+key}}
+let pool={d:0,n:0},roundMsg='';
+function candidates(){
+ if(cfg.mode==='alg'){return flat().filter(x=>(!cfg.meth||x.m===cfg.meth)&&(!cfg.q||(x.m+x.s+x.n).toLowerCase().includes(cfg.q.toLowerCase()))).map(x=>Object.assign({kind:'alg',id:'a:'+x.m+'|'+x.s+'|'+x.n},x))}
+ const types=cfg.type==='b'?['e','c']:[cfg.type],C=[];
+ types.forEach(t=>{const m=sch[t];
+  if(cfg.mode==='wp'){ // word -> pair: only pairs that have words
+   const inv={};Object.keys(m).forEach(n=>inv[m[n]]=n);
+   Object.keys(pw).forEach(k=>{if(k.length!==2)return;const a=inv[k[0]],b=inv[k[1]];
+    if(a&&b&&pk(a)!==pk(b)&&focusOk(k[0])&&(!cfg.excl||(pk(a)!==bufPk(t)&&pk(b)!==bufPk(t))))C.push(pairItem(t,a,b))})}
+  else{const N=(t==='e'?EP:CP).filter(n=>!cfg.excl||pk(n)!==bufPk(t));
+   N.filter(n=>focusOk(m[n])).forEach(a=>N.forEach(b=>{if(pk(a)!==pk(b))C.push(pairItem(t,a,b))}))}});
+ return C}
+// A pair marked "Got it" is not shown again until every other item in the current pool has been marked too.
+function gen(prev){
+ const C=candidates();pool={d:0,n:C.length};if(!C.length)return null;
+ let L=C.filter(x=>!done[x.id]);
+ if(!L.length){C.forEach(x=>delete done[x.id]);sv('done',done);L=C;roundMsg='Round complete – all '+C.length+' done. Starting a new round.'}
+ pool.d=C.length-L.length;
+ const P=L.length>1?L.filter(x=>x.id!==prev):L;return rnd(P)}
+function next(){cur=gen(cur&&cur.id);shown=false;draw()}
+function reveal(){if(cur&&!shown){shown=true;draw()}}
+function mark(ok){if(!cur||!shown)return;
+ stats.n++;sess.n++;if(ok){stats.ok++;sess.ok++;stats.st++;stats.best=Math.max(stats.best,stats.st)}else stats.st=0;
+ const p=stats.per[cur.id]||(stats.per[cur.id]=[0,0]);p[1]++;if(ok){p[0]++;done[cur.id]=1}else delete done[cur.id];saveStats();sv('done',done);roundMsg='';next()}
+const pct=(a,b)=>b?Math.round(100*a/b)+'%':'–';
+function draw(){const box=$('tc');if(!box)return;
+ let h='';
+ if(!cur){h=cfg.mode==='alg'?'<div class="mu">No algorithms match. Import some in the <b>Data</b> tab or loosen the filters.</div>'
+  :cfg.mode==='wp'?'<div class="mu">No pairs with words match. Add words in the <b>Pairs</b> tab or loosen the filters.</div>'
+  :'<div class="mu">No stickers match the current focus/buffer settings.</div>'}
+ else if(cur.kind==='alg'){h=`<div class="cap">${esc(cur.m)} › ${esc(cur.s)}</div><div class="word">${esc(cur.n)}</div>`+(shown?`<div class="ans"><div class="cap">Algorithm</div><code class="code">${esc(cur.alg)}</code></div>`:'')}
+ else{const w=pw[cur.key],A=findAlg(cur.t,cur.key),ty=cur.t==='e'?'Edge pair':'Corner pair',al=A?`<code class="code">${esc(A.alg)}</code><div class="mu">${esc(A.m)} › ${esc(A.s)}</div>`:'<div class="mu">No algorithm named “'+esc(cur.key)+'” imported.</div>';
+  if(cfg.mode==='pw'){h=`<div class="cap">${ty} · ${esc(cur.a)} → ${esc(cur.b)}</div><div class="pair">${esc(cur.key)}</div>`+(shown?`<div class="ans"><div class="cap">Pair word</div><div class="word">${w?esc(w):'<span class="mu">— not set —</span>'}</div>${al}</div>`:'')}
+  else{h=`<div class="cap">${ty} · what is the pair?</div><div class="word">${esc(pw[cur.key])}</div>`+(shown?`<div class="ans"><div class="cap">Letters</div><div class="pair">${esc(cur.key)}</div><div class="mu">${esc(cur.a)} → ${esc(cur.b)}</div>${al}</div>`:'')}}
+ box.innerHTML=h;
+ $('tb').innerHTML=!cur?'':shown?'<button class="b p" data-a="ok">Got it (Y)</button><button class="b" data-a="no">Missed (N)</button><button class="b" data-a="skip">Next (Space)</button>':'<button class="b p" data-a="rev">Reveal (Space)</button><button class="b" data-a="skip">Skip</button>';
+ $('tp').innerHTML=pool.n?`Round progress: <b>${pool.d}</b> / ${pool.n} done · <a href="#" data-a="rnd">restart round</a>`+(roundMsg?` <span class="ok">${esc(roundMsg)}</span>`:''):'';
+ $('ts').innerHTML=`<div>Total<b>${stats.n}</b></div><div>Accuracy<b>${pct(stats.ok,stats.n)}</b></div><div>Streak<b>${stats.st}</b></div><div>Best<b>${stats.best}</b></div><div>Session<b>${sess.ok}/${sess.n}</b></div>`;
+ const miss=Object.entries(stats.per).filter(([k,v])=>v[1]>v[0]).sort((a,b)=>(b[1][1]-b[1][0])-(a[1][1]-a[1][0])).slice(0,6);
+ $('tm').innerHTML=miss.length?'<h2>Most missed</h2>'+miss.map(([k,v])=>`<span class="tag mu" style="margin-right:12px">${esc(k.replace(/^[eca]:/,'').split('|').pop())} <b class="no">${v[1]-v[0]}✗</b></span>`).join(''):''}
+const opts=(l,v)=>l.map(([a,b])=>`<option value="${esc(a)}"${a===v?' selected':''}>${esc(b)}</option>`).join('');
+function rTrain(){const meths=cu.map(x=>[x.t,x.t]),m=cfg.mode;
+ $('main').innerHTML=`<div class="card"><div class="row">
+  <label class="f">Drill<select class="in" data-c="mode">${opts([['pw','Pair → word'],['wp','Word → pair'],['alg','Algorithm recall']],m)}</select></label>
+  ${m==='alg'?`<label class="f">Method<select class="in" data-c="meth">${opts([['','All']].concat(meths),cfg.meth)}</select></label>
+   <label class="f">Search<input class="in" data-c="q" value="${esc(cfg.q)}" placeholder="name or subtitle" style="width:150px"></label>`
+  :`<label class="f">Pieces<select class="in" data-c="type">${opts([['e','Edges'],['c','Corners'],['b','Both']],cfg.type)}</select></label>
+   <label class="f">Edge buffer<select class="in" data-c="eb">${opts(EP.map(n=>[n,sch.e[n]+' ('+n+')']),cfg.eb)}</select></label>
+   <label class="f">Corner buffer<select class="in" data-c="cb">${opts(CP.map(n=>[n,sch.c[n]+' ('+n+')']),cfg.cb)}</select></label>
+   <label class="f">First letters<input class="in" data-c="focus" value="${esc(cfg.focus)}" placeholder="all, or e.g. ABCD" style="width:130px"></label>
+   <label class="f">&nbsp;<span><input type="checkbox" data-c="excl"${cfg.excl?' checked':''}> exclude buffer</span></label>`}
+  </div></div>
+ <div class="card"><div class="stage" id="tc"></div><div class="row" id="tb" style="justify-content:center"></div></div>
+ <div class="card"><div class="mu" id="tp" style="margin-bottom:10px"></div><div class="st" id="ts"></div><div id="tm" style="margin-top:12px"></div></div>
+ <div class="mu"><kbd>Space</kbd>/<kbd>Enter</kbd> reveal, then next · <kbd>Y</kbd>/<kbd>→</kbd> got it · <kbd>N</kbd>/<kbd>←</kbd> missed</div>`;
+ if(!cur)cur=gen();draw()}
+
+/* ---------- algorithms tab ---------- */
+let aq='';
+function rAlgs(){$('main').innerHTML=`<div class="card"><h2>Add algorithm</h2><div class="row">
+  <input class="in" id="am" placeholder="Method" style="width:110px" list="ml"><datalist id="ml">${cu.map(x=>`<option value="${esc(x.t)}">`).join('')}</datalist>
+  <input class="in" id="as" placeholder="SubTitle (e.g. Edges)" style="width:150px"><input class="in" id="an" placeholder="AlgName (e.g. AB)" style="width:130px">
+  <input class="in" id="aa" placeholder="R U R' U' …" style="flex:1;min-width:160px"><button class="b p" data-a="addalg">Add</button></div><div class="mu" id="amsg"></div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Library · ${flat().length} algorithms</h2><input class="in" id="aqs" placeholder="Filter…" value="${esc(aq)}"></div><div id="al"></div></div>`;
+ lAlgs()}
+function lAlgs(){let n=0,h='';const q=aq.toLowerCase();
+ cu.forEach((T,ti)=>T.s.forEach((S,si)=>{const rows=S.a.map((a,ai)=>[a,ai]).filter(([a])=>!q||(T.t+S.n+a[0]+a[2]).toLowerCase().includes(q));if(!rows.length)return;
+  h+=`<div class="gh">${esc(T.t)} › ${esc(S.n)}</div>`;
+  rows.forEach(([a,ai])=>{if(++n>300)return;h+=`<div class="al"><div class="row" style="justify-content:space-between"><b>${esc(a[0])}</b><button class="b d" data-a="delalg" data-t="${ti}" data-s="${si}" data-i="${ai}">Delete</button></div><code class="code" style="margin:6px 0 0;max-width:none">${esc(a[2])}</code></div>`})}));
+ $('al').innerHTML=h||'<div class="mu" style="margin-top:8px">Nothing here yet — add one above or import in the Data tab.</div>'+(n>300?'<div class="mu">Showing the first 300 – use the filter.</div>':'')}
+
+/* ---------- pairs tab ---------- */
+let pq='';
+const scInner=(t,N)=>N.map(n=>`<label>${n}<input class="in" autocomplete="off" data-sc="${t}" data-n="${n}" value="${esc(sch[t][n])}"></label>`).join('');
+const scWarn=t=>{const w=$('scw');if(!w)return;w.textContent=t||'';w.hidden=!t};
+function rPairs(){const grid=(t,N)=>`<div class="scg" id="sg-${t}">${scInner(t,N)}</div>`;
+ $('main').innerHTML=`<div class="card"><h2>Pair words</h2><div class="row"><input class="in" id="pk" placeholder="AB" maxlength="2" style="width:70px;text-transform:uppercase"><input class="in" id="pv" placeholder="word / image cue" style="flex:1;min-width:140px"><button class="b p" data-a="addpw">Save</button></div><div class="mu" id="pmsg"></div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${Object.keys(pw).length} words</h2><input class="in" id="pqs" placeholder="Filter…" value="${esc(pq)}"></div><div id="pl" style="margin-top:8px"></div></div>
+  <div class="card"><h2>Letter scheme</h2><div class="mu">Click a letter and type to replace it. A letter already used by another sticker is refused with a warning. Same format as BLDTrainer (<code>sch.e</code> / <code>sch.c</code>).</div>
+   <div class="scw" id="scw" hidden></div><details open><summary>Edges</summary><div style="margin-top:8px">${grid('e',EP)}</div></details><details><summary>Corners</summary><div style="margin-top:8px">${grid('c',CP)}</div></details>
+   <div class="row" style="margin-top:12px"><button class="b d" data-a="rsch">Reset to Speffz</button></div></div>`;
+ lPairs()}
+function lPairs(){const q=pq.toLowerCase(),L=Object.entries(pw).filter(([k,v])=>!q||(k+v).toLowerCase().includes(q)).sort((a,b)=>a[0].localeCompare(b[0])).slice(0,400);
+ $('pl').innerHTML=L.map(([k,v])=>`<span class="row" style="display:inline-flex;margin:0 14px 6px 0;gap:4px"><b style="font-family:ui-monospace,monospace;color:var(--ac)">${esc(k)}</b> ${esc(v)} <a href="#" data-a="delpw" data-k="${esc(k)}" class="mu" title="Delete" style="text-decoration:none">×</a></span>`).join('')||'<span class="mu">No pair words yet.</span>'}
+
+/* ---------- data (import / export) tab ---------- */
+function blk(id,title,hint,btns,fn){return `<div class="card"><h2>${title}</h2><div class="mu">${hint}</div><textarea class="in" id="${id}" spellcheck="false"></textarea><div class="row">${btns}
+ <button class="b" data-a="copy" data-t="${id}">Copy</button><button class="b" data-a="dl" data-t="${id}" data-f="${fn}">Download</button><label class="b">Load file<input type="file" hidden accept=".txt,.md,.json,.csv,.tsv,.xlsx" data-load="${id}"></label></div></div>`}
+function rData(){$('main').innerHTML=
+ blk('ta','Algorithms','Pipe table <code>| Method | SubTitle | AlgName | Alg |</code> or JSON (BLDTrainer custom-algorithm array, or <code>[{method,subtitle,name,alg}]</code>), or an <b>.xlsx</b> sheet with the four columns Method, SubTitle, AlgName, Alg (use <i>Load file</i>). Moves are validated; <code>’ ‘ ′</code> become <code>\'</code>.',
+  '<button class="b" data-a="xt">Export table</button><button class="b" data-a="xj">Export JSON</button><button class="b" data-a="xxa">Export Excel</button><button class="b p" data-a="ia">Import</button>','algorithms.txt')+
+ blk('tp','Letter pairs &amp; scheme','Lines <code>AB=word</code> or JSON <code>{"pw":{…},"sch":{"e":{…},"c":{…}}}</code>. Import also accepts a plain <code>{"AB":"word"}</code> object. An <b>.xlsx</b> grid works too (letters down column A and across row 1, word in each cell; use <i>Load file</i>).',
+  '<button class="b" data-a="xl">Export lines</button><button class="b" data-a="xpj">Export JSON</button><button class="b" data-a="xxp">Export Excel</button><button class="b p" data-a="ip">Import</button>','pairs.txt')+
+ `<div id="msg" class="mu"></div><div class="card"><h2>Reset</h2><div class="row"><button class="b d" data-a="rst">Reset stats &amp; rounds</button><button class="b d" data-a="rca">Delete all algorithms</button><button class="b d" data-a="rcp">Delete all pair words</button></div></div>`}
+const say=(t,bad)=>{const m=$('msg')||$('amsg')||$('pmsg');if(m){m.textContent=t;m.className='mu '+(bad?'no':'ok')}};
+function copy(id){const t=$(id);if(!t.value)return say('Nothing to copy.',1);
+ const fb=()=>{t.select();try{document.execCommand('copy');say('Copied.')}catch(e){say('Select the text and copy manually.',1)}};
+ try{navigator.clipboard.writeText(t.value).then(()=>say('Copied.'),fb)}catch(e){fb()}}
+function dl(id,name){const v=$(id).value;if(!v)return say('Nothing to download.',1);
+ dlBlob(new Blob([v],{type:'text/plain'}),name)}
+function dlBlob(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+/* ---------- Excel (.xlsx) read/write, dependency-free ---------- */
+const u16=(d,o)=>d[o]|d[o+1]<<8,u32=(d,o)=>(d[o]|d[o+1]<<8|d[o+2]<<16|d[o+3]<<24)>>>0;
+async function unzip(buf){const d=new Uint8Array(buf),out={},td=new TextDecoder();let e=d.length-22;while(e>=0&&u32(d,e)!==0x06054b50)e--;
+ if(e<0)throw new Error('not a valid .xlsx file');let p=u32(d,e+16);const n=u16(d,e+10);
+ for(let i=0;i<n&&u32(d,p)===0x02014b50;i++){const m=u16(d,p+10),cs=u32(d,p+20),nl=u16(d,p+28),el=u16(d,p+30),cl=u16(d,p+32),lo=u32(d,p+42),name=td.decode(d.subarray(p+46,p+46+nl));p+=46+nl+el+cl;
+  if(!/^xl\/(sharedStrings\.xml|worksheets\/sheet\d+\.xml)$/.test(name))continue;
+  const s=lo+30+u16(d,lo+26)+u16(d,lo+28);let c=d.subarray(s,s+cs);
+  if(m===8){if(typeof DecompressionStream==='undefined')throw new Error('this browser cannot unzip .xlsx; paste the data instead');
+   c=new Uint8Array(await new Response(new Blob([c]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}else if(m!==0)continue;
+  out[name]=td.decode(c)}return out}
+async function xlsxRows(buf){const z=await unzip(buf),X=t=>new DOMParser().parseFromString(t,'application/xml'),T=el=>[...el.getElementsByTagName('t')].map(t=>t.textContent).join('');
+ const names=Object.keys(z).filter(k=>/worksheets/.test(k)).sort((a,b)=>parseInt(a.match(/\d+/))-parseInt(b.match(/\d+/)));if(!names.length)throw new Error('no worksheet found');
+ const ss=z['xl/sharedStrings.xml']?[...X(z['xl/sharedStrings.xml']).getElementsByTagName('si')].map(T):[],rows=[];
+ [...X(z[names[0]]).getElementsByTagName('c')].forEach(c=>{const r=(c.getAttribute('r')||'').match(/^([A-Z]+)(\d+)$/);if(!r)return;let col=0;for(const ch of r[1])col=col*26+ch.charCodeAt(0)-64;
+  const ty=c.getAttribute('t'),v=c.getElementsByTagName('v')[0],is=c.getElementsByTagName('is')[0];
+  const val=ty==='s'&&v?ss[+v.textContent]:ty==='inlineStr'&&is?T(is):v?v.textContent:'';
+  (rows[+r[2]-1]||(rows[+r[2]-1]=[]))[col-1]=val==null?'':String(val)});return rows}
+// Matrix sheet (row letter in column A, column letter in row 1, word in the cell) -> "AB=word" lines
+function matrixToPairs(rows){const H=rows[0]||[],L=[];
+ rows.forEach((r,i)=>{if(!i||!r)return;const a=String(r[0]||'').trim().toUpperCase();if(a.length!==1)return;
+  r.forEach((v,j)=>{const b=String(H[j]||'').trim().toUpperCase();v=String(v==null?'':v).trim();if(j&&b.length===1&&v)L.push(a+b+'='+v)})});return L.join('\n')}
+// Rows with Method | SubTitle | AlgName | Alg in the first four columns -> pipe table
+const rowsToTable=rows=>rows.filter(r=>r&&[0,1,2,3].every(i=>String(r[i]||'').trim())).map(r=>'| '+[0,1,2,3].map(i=>String(r[i]).trim()).join(' | ')+' |').join('\n');
+const crcT=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^c>>>1:c>>>1;t[n]=c>>>0}return t})();
+const crc=d=>{let c=-1;for(let i=0;i<d.length;i++)c=crcT[(c^d[i])&255]^c>>>8;return(c^-1)>>>0};
+function zip(files){const te=new TextEncoder(),L=[],C=[],names=Object.keys(files);let off=0;
+ names.forEach(name=>{const nb=te.encode(name),d=te.encode(files[name]),c=crc(d),lh=new DataView(new ArrayBuffer(30)),ch=new DataView(new ArrayBuffer(46));
+  lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x800,true);lh.setUint32(14,c,true);lh.setUint32(18,d.length,true);lh.setUint32(22,d.length,true);lh.setUint16(26,nb.length,true);
+  ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x800,true);ch.setUint32(16,c,true);ch.setUint32(20,d.length,true);ch.setUint32(24,d.length,true);ch.setUint16(28,nb.length,true);ch.setUint32(42,off,true);
+  L.push(new Uint8Array(lh.buffer),nb,d);C.push(new Uint8Array(ch.buffer),nb);off+=30+nb.length+d.length});
+ const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,names.length,true);e.setUint16(10,names.length,true);e.setUint32(12,C.reduce((s,a)=>s+a.length,0),true);e.setUint32(16,off,true);
+ return new Blob([...L,...C,new Uint8Array(e.buffer)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+const colN=i=>{let s='';for(i++;i>0;i=(i-1)/26|0)s=String.fromCharCode(65+(i-1)%26)+s;return s};
+const xe=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'');
+function xlsxBlob(rows){const H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',R='http://schemas.openxmlformats.org/officeDocument/2006/relationships',RS='<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
+ sd=rows.map((r,i)=>`<row r="${i+1}">`+r.map((v,j)=>v===''||v==null?'':`<c r="${colN(j)}${i+1}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`).join('')+'</row>').join('');
+ return zip({'[Content_Types].xml':H+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
+  '_rels/.rels':H+RS+`<Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+  'xl/workbook.xml':H+`<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${R}"><sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>`,
+  'xl/_rels/workbook.xml.rels':H+RS+`<Relationship Id="rId1" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`,
+  'xl/worksheets/sheet1.xml':H+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+sd+'</sheetData></worksheet>'})}
+function pairRows(){const L=[...new Set([...Object.values(sch.e),...Object.values(sch.c)])].sort();return[['',...L]].concat(L.map(a=>[a,...L.map(b=>pw[a+b]||'')]))}
+const algRows=()=>[['Method','SubTitle','AlgName','Alg']].concat(flat().map(x=>[x.m,x.s,x.n,x.alg]));
+const rep=r=>`Imported ${r.add} new, ${r.dup||0} duplicate, ${r.bad} invalid.`;
+
+/* ---------- events ---------- */
+const TABS=[['train','Train'],['algs','Algorithms'],['pairs','Pairs'],['data','Import / Export']];
+function go(t){tab=t;$('nav').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${k===t?'on':''}">${l}</button>`).join('');({train:rTrain,algs:rAlgs,pairs:rPairs,data:rData})[t]()}
+function theme(){const r=document.documentElement;if(cfg.theme==='auto')r.removeAttribute('data-theme');else r.dataset.theme=cfg.theme;$('th').textContent='Theme: '+cfg.theme}
+document.addEventListener('click',e=>{
+ const tb=e.target.closest('[data-tab]');if(tb)return go(tb.dataset.tab);
+ if(e.target.closest('#th')){cfg.theme={auto:'light',light:'dark',dark:'auto'}[cfg.theme]||'auto';saveCfg();return theme()}
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,D=el.dataset;if(a==='delpw')e.preventDefault();if(el.tagName==='BUTTON')el.blur();
+ try{switch(a){
+  case 'rev':reveal();break;
+  case 'rnd':e.preventDefault();candidates().forEach(x=>delete done[x.id]);sv('done',done);roundMsg='';next();break;case 'ok':mark(true);break;case 'no':mark(false);break;case 'skip':next();break;
+  case 'addalg':{const r=addAlg($('am').value,$('as').value,$('an').value,$('aa').value);if(r==='add'){saveCu();rAlgs();say('Added.')}else say(r==='dup'?'Already in the library.':'Fill every field using valid move notation (e.g. R U R\' U\').',r!=='dup')}break;
+  case 'delalg':{const T=cu[+D.t],S=T.s[+D.s];S.a.splice(+D.i,1);if(!S.a.length)T.s.splice(+D.s,1);if(!T.s.length)cu.splice(+D.t,1);saveCu();cur=null;rAlgs()}break;
+  case 'addpw':{const k=$('pk').value.trim().toUpperCase(),v=$('pv').value.trim();if(/^\S{1,2}$/.test(k)&&v){pw[k]=v;savePw();rPairs()}else say('Enter 1–2 letters and a word.',1)}break;
+  case 'delpw':delete pw[D.k];savePw();rPairs();break;
+  case 'rsch':sch=defSch();saveSch();cur=null;rPairs();break;
+  case 'xt':$('ta').value=expTable();say(flat().length+' algorithms exported.');break;
+  case 'xj':$('ta').value=expJson();say('Exported JSON.');break;
+  case 'ia':{const t=$('ta').value.trim();if(!t)return say('Paste or load something first.',1);const r=/^[\[{]/.test(t)?impJson(JSON.parse(t)):impTable(t);saveCu();cur=null;say(rep(r),!r.add&&!r.dup)}break;
+  case 'xxa':dlBlob(xlsxBlob(algRows()),'algorithms.xlsx');say(flat().length+' algorithms exported to Excel.');break;
+  case 'xxp':dlBlob(xlsxBlob(pairRows()),'pairs.xlsx');say('Pair grid exported to Excel.');break;
+  case 'xl':$('tp').value=expPairs();say(Object.keys(pw).length+' pairs exported.');break;
+  case 'xpj':$('tp').value=expPairsJson();say('Exported JSON.');break;
+  case 'ip':{const t=$('tp').value.trim();if(!t)return say('Paste or load something first.',1);const r=impPairs(t);cur=null;say(r.sch+rep(r),!r.add&&!r.sch)}break;
+  case 'copy':copy(D.t);break;case 'dl':dl(D.t,D.f);break;
+  case 'rst':if(confirm('Reset all statistics?')){stats={n:0,ok:0,st:0,best:0,per:{}};sess={n:0,ok:0};done={};saveStats();sv('done',done);say('Stats and rounds reset.')}break;
+  case 'rca':if(confirm('Delete all algorithms?')){cu=[];saveCu();cur=null;say('Algorithms deleted.')}break;
+  case 'rcp':if(confirm('Delete all pair words?')){pw={};savePw();cur=null;say('Pair words deleted.')}break}}
+ catch(err){say('Import failed: '+(err&&err.message||'invalid input'),1)}});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.c){const k=t.dataset.c;cfg[k]=t.type==='checkbox'?t.checked:t.value;saveCfg();if(k==='mode')return rTrain();cur=null;next()}
+ else if(t.dataset.sc){t.value=sch[t.dataset.sc][t.dataset.n]} // blur with empty/invalid value: restore
+ else if(t.dataset.load&&t.files[0]){const file=t.files[0],id=t.dataset.load,f=new FileReader();t.value='';
+  if(/\.xlsx$/i.test(file.name)){f.onload=async()=>{try{const rows=await xlsxRows(f.result),txt=id==='ta'?rowsToTable(rows):matrixToPairs(rows);
+    if(!txt)return say(id==='ta'?'No rows with Method, SubTitle, AlgName and Alg found in the first sheet.':'No pair grid found: expected letters in column A and row 1.',1);
+    $(id).value=txt;say('Excel sheet read ('+txt.split('\n').length+' rows) – press Import.')}catch(err){say('Could not read the Excel file: '+(err&&err.message||'unknown error'),1)}};f.readAsArrayBuffer(file)}
+  else{f.onload=()=>{$(id).value=String(f.result);say('File loaded – press Import.')};f.readAsText(file)}}});
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.dataset.c==='focus'||t.dataset.c==='q'){cfg[t.dataset.c]=t.value;saveCfg();cur=null;next()}
+ else if(t.dataset.sc){const ty=t.dataset.sc,n=t.dataset.n,m=sch[ty],old=m[n],cs=[...t.value.toUpperCase()].filter(c=>c.trim());
+  if(!cs.length)return; // emptied: wait for the new letter (restored on blur if none)
+  const l=cs.find(c=>c!==old)||cs[0],o=Object.keys(m).find(x=>m[x]===l&&x!==n);
+  t.value=old;
+  if(o){t.classList.add('bad');scWarn(`“${l}” is already used by ${o} (${ty==='e'?'edges':'corners'}). Each letter can be used once per piece type.`);t.select();return}
+  m[n]=l;t.value=l;t.classList.remove('bad');scWarn('');saveSch();cur=null;t.select()}
+ else if(t.id==='aqs'){aq=t.value;lAlgs()}else if(t.id==='pqs'){pq=t.value;lPairs()}});
+document.addEventListener('focusin',e=>{if(e.target.dataset&&e.target.dataset.sc){scWarn('');e.target.classList.remove('bad');e.target.select()}});
+document.addEventListener('mouseup',e=>{if(e.target.dataset&&e.target.dataset.sc)e.preventDefault()}); // keep the select-all from focus
+document.addEventListener('keydown',e=>{
+ if(tab!=='train'||e.ctrlKey||e.metaKey||e.altKey||/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||'')))return;
+ const k=e.key.toLowerCase();let h=true;
+ if(k===' '||k==='enter')shown?next():reveal();
+ else if(k==='y'||k==='arrowright')mark(true);else if(k==='n'||k==='arrowleft')mark(false);else h=false;
+ if(h)e.preventDefault()});
+theme();go('train');
+})();
+</script>
+</body>
+</html>
