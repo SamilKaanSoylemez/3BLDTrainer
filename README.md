@@ -1,4 +1,4 @@
-# 3BLDTrainer
+# 3x3 and 3BLD Trainer
 Standalone browser-based 3×3 and 3×3 Blindfolded (3BLD) speedcubing trainer featuring custom letter schemes, memo/execution timers, 2D/3D algorithm animations, and solve statistics.
 
 Cube Trainer (3×3 & 3BLD) is a zero-dependency, single-HTML-file speedcubing practice suite built for both regular 3×3 speedsolving and 3×3 Blindfolded (3BLD) training:
